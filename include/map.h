@@ -4,14 +4,14 @@
 
 class Map {
 public:
-    Map();
     ~Map();
 
     float getWidth() const {return w;}
     float getHeight() const {return h;}
     SDL_Texture* getTexture() const {return m_texture;}
 
-    void render(SDL_FRect gameViewport);
+    void init(SDL_Renderer *renderer);
+    void render(SDL_Renderer *renderer, SDL_FRect gameViewport);
 
 private:
     SDL_Texture *m_texture{nullptr};

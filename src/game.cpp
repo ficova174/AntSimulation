@@ -4,12 +4,6 @@
 #include "viewport.h"
 #include "ant.h"
 
-Game::Game() {
-    viewport.setCoordinates(mapWidth/2, mapHeight/2);
-    viewport.setSize(screenWidth, screenHeight);
-    ant.setCoordinates(mapWidth/2, mapHeight/2);
-}
-
 Game::~Game() {
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
@@ -55,6 +49,14 @@ bool Game::init(const char* appName, const char* creatorName) {
         return false;
     }
 
+    map.init(renderer);
+
+    viewport.setCoordinates(map, map.getWidth()/2, map.getHeight()/2);
+    viewport.setSize(map, screenWidth, screenHeight);
+
+    ant.init(renderer);
+    ant.setCoordinates(map, map.getWidth()/2, map.getHeight()/2);
+
     return true;
 }
 
@@ -86,22 +88,22 @@ void Game::loop() {
         // Rendering
         render();
 
-        float targetFrameTime = 1.0f / TARGET_FPS;
+        float targetFrameTime = 1.0f / targetFPS;
         float frameTime = static_cast<float>(SDL_GetPerformanceCounter() - currentCounter) / perfFreq;
         if (frameTime < targetFrameTime) {
-            SDL_Delay(static_cast<Uint32>((targetFrameTime - frameTime) * 1.0e3f))
+            SDL_Delay(static_cast<Uint32>((targetFrameTime - frameTime) * 1.0e3f));
         }
     }
 }
 
 void Game::handleEvents(SDL_Event &event, bool &running) {
-    while (SDL_PollEvent(event)) {
+    while (SDL_PollEvent(&event)) {
         switch (event.type) {
             case SDL_EVENT_QUIT:
                 running = false;
                 break;
             case SDL_EVENT_MOUSE_WHEEL:
-                handleZoom(event, map, viewport, ant);
+                handleZoom(event);
                 break;
         }
         if (!running) {
@@ -110,30 +112,28 @@ void Game::handleEvents(SDL_Event &event, bool &running) {
     }
 }
 
-void handleZoom(SDL_Event &event, Map &map, Viewport &viewport, Ant &ant) {
+void Game::handleZoom(SDL_Event &event) {
     // Adjust viewport size based on mouse wheel scroll
     float viewportChangeX = event.wheel.y * viewport.getZoomSpeed();
-    float viewportChangeY = viewportChangeX * Game::aspectRatio;
-    float newOldRatio = viewport.w / (viewport.w + viewportChangeX);
+    float viewportChangeY = viewportChangeX * screenRatio;
+    float newOldRatio = viewport.getZoomFactor(viewportChangeX);
 
-    viewport.zoom(viewportChangeX, viewportChangeY);
-    ant.zoom(newOldRatio);
+    viewport.zoom(map, viewportChangeX, viewportChangeY, screenRatio);
+    ant.zoom(map, newOldRatio);
 }
 
 
 void Game::handleMovements(const bool *keys, float deltaTime) {
     SDL_PumpEvents();
-    viewport.move(keys, deltaTime);
-
-    float currentZoomFactor = Game::screenWidth / viewport.w;
+    viewport.move(map, keys, deltaTime);
 
     SDL_PumpEvents();
-    ant.move(keys, deltaTime);
+    ant.move(map, keys, deltaTime);
 }
 
 void Game::render() {
     SDL_RenderClear(renderer);
-    map.render(viewport.getViewport());
-    ant.render(viewport.getViewport());
+    map.render(renderer, viewport.getViewport());
+    ant.render(renderer, viewport.getViewport());
     SDL_RenderPresent(renderer);
 }
