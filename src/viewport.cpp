@@ -5,7 +5,11 @@
 #include "viewport.h"
 #include "map.h"
 
-void Viewport::setCoordinates(Map map, float x, float y) {
+float Viewport::getZoomFactor(float viewportChangeX) const {
+    return m_viewport.w / (m_viewport.w + viewportChangeX);
+}
+
+void Viewport::setCoordinates(const Map &map, float x, float y) {
     m_viewport.x = x;
     m_viewport.y = y;
 
@@ -13,7 +17,7 @@ void Viewport::setCoordinates(Map map, float x, float y) {
     m_viewport.y = std::clamp(m_viewport.y, 0.0f, map.getHeight() - m_viewport.h);
 }
 
-void Viewport::setSize(Map map, float w, float h) {
+void Viewport::setSize(const Map &map, float w, float h) {
     // Warning : no clamping done !
     m_viewport.w = w;
     m_viewport.h = h;
@@ -23,40 +27,30 @@ void Viewport::setSize(Map map, float w, float h) {
     }
 }
 
-void Viewport::zoom(Map map, float changex, float changey, float screenRatio) {
+void Viewport::zoom(const Map &map, float changex, float changey) {
     float mapWidth = map.getWidth();
     float mapHeight = map.getHeight();
 
+    // 500 is arbitrary and represents min height
+    bool lessMinHeight{(m_viewport.h + changey < 500.0f)};
+    bool moreMaxHeight{(m_viewport.h + changey > mapHeight)};
+    bool moreMaxWidth{(m_viewport.w + changex > mapWidth)};
+
+    if (lessMinHeight || moreMaxHeight || moreMaxWidth) {
+        return;
+    }
+
     m_viewport.w += changex;
     m_viewport.h += changey;
-    m_viewport.x -= changex / 2;
-    m_viewport.y -= changey / 2;
 
-    // 500 is arbitrary and represents min height
-    if (m_viewport.h < 500) {
-        m_viewport.x -= (500 / screenRatio - m_viewport.w) / 2;
-        m_viewport.y -= (500 - m_viewport.h) / 2;
-        m_viewport.h = 500;
-        m_viewport.w = 500 / screenRatio;
-    }
-    else if (m_viewport.h > mapHeight) {
-        m_viewport.x -= (mapHeight / screenRatio - m_viewport.w) / 2;
-        m_viewport.y -= (mapHeight - m_viewport.h) / 2;
-        m_viewport.h = mapHeight;
-        m_viewport.w = mapHeight / screenRatio;
-    }
-    else if (m_viewport.w > mapWidth) {
-        m_viewport.x -= (mapWidth * screenRatio - m_viewport.w) / 2;
-        m_viewport.y -= (mapWidth - m_viewport.h) / 2;
-        m_viewport.w = mapWidth;
-        m_viewport.h = mapWidth * screenRatio;
-    }
+    m_viewport.x -= changex / 2.0f;
+    m_viewport.y -= changey / 2.0f;
 
     m_viewport.x = std::clamp(m_viewport.x, 0.0f, mapWidth - m_viewport.w);
     m_viewport.y = std::clamp(m_viewport.y, 0.0f, mapHeight - m_viewport.h);
 }
 
-void Viewport::move(Map map, const bool *keys, float deltaTime) {
+void Viewport::move(const Map &map, const bool *keys, float deltaTime) {
     float dx{0.0f};
     float dy{0.0f};
 

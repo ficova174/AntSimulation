@@ -51,27 +51,27 @@ bool Game::init(const char* appName, const char* creatorName) {
 
     map.init(renderer);
 
-    viewport.setCoordinates(map, map.getWidth()/2, map.getHeight()/2);
     viewport.setSize(map, screenWidth, screenHeight);
+    viewport.setCoordinates(map, map.getWidth() / 2.0f, map.getHeight() / 2.0f);
 
     ant.init(renderer);
-    ant.setCoordinates(map, map.getWidth()/2, map.getHeight()/2);
+    ant.setCoordinates(map, map.getWidth() / 2.0f + 100.0f, map.getHeight() / 2.0f + 100.0f);
 
     return true;
 }
 
 void Game::loop() {
-    Uint64 perfFreq = SDL_GetPerformanceFrequency();
-    Uint64 lastCounter = SDL_GetPerformanceCounter();
+    Uint64 perfFreq{SDL_GetPerformanceFrequency()};
+    Uint64 lastCounter{SDL_GetPerformanceCounter()};
 
     SDL_Event event;
-    bool running = true;
+    bool running{true};
 
     while (running) {
         // FPS counter
-        Uint64 currentCounter = SDL_GetPerformanceCounter();
+        Uint64 currentCounter{SDL_GetPerformanceCounter()};
         // Convert to seconds
-        float deltaTime = static_cast<float>((currentCounter - lastCounter) / perfFreq);
+        float deltaTime{static_cast<float>(currentCounter - lastCounter) / static_cast<float>(perfFreq)};
         lastCounter = currentCounter;
 
         // Events handling
@@ -82,14 +82,15 @@ void Game::loop() {
         }
 
         // Movement handling
-        const bool *keys = SDL_GetKeyboardState(nullptr);
+        const bool *keys{SDL_GetKeyboardState(nullptr)};
         handleMovements(keys, deltaTime);
         
         // Rendering
         render();
 
-        float targetFrameTime = 1.0f / targetFPS;
-        float frameTime = static_cast<float>(SDL_GetPerformanceCounter() - currentCounter) / perfFreq;
+        float targetFrameTime {1.0f / targetFPS};
+        float frameTime {static_cast<float>(SDL_GetPerformanceCounter() - currentCounter) / perfFreq};
+
         if (frameTime < targetFrameTime) {
             SDL_Delay(static_cast<Uint32>((targetFrameTime - frameTime) * 1.0e3f));
         }
@@ -113,15 +114,11 @@ void Game::handleEvents(SDL_Event &event, bool &running) {
 }
 
 void Game::handleZoom(SDL_Event &event) {
-    // Adjust viewport size based on mouse wheel scroll
-    float viewportChangeX = event.wheel.y * viewport.getZoomSpeed();
-    float viewportChangeY = viewportChangeX * screenRatio;
-    float newOldRatio = viewport.getZoomFactor(viewportChangeX);
+    float viewportChangeX{event.wheel.y * viewport.getZoomSpeed()};
+    float viewportChangeY{viewportChangeX / aspectRatio};
 
-    viewport.zoom(map, viewportChangeX, viewportChangeY, screenRatio);
-    ant.zoom(map, newOldRatio);
+    viewport.zoom(map, viewportChangeX, viewportChangeY);
 }
-
 
 void Game::handleMovements(const bool *keys, float deltaTime) {
     SDL_PumpEvents();
@@ -134,6 +131,6 @@ void Game::handleMovements(const bool *keys, float deltaTime) {
 void Game::render() {
     SDL_RenderClear(renderer);
     map.render(renderer, viewport.getViewport());
-    ant.render(renderer, viewport.getViewport());
+    ant.render(renderer, viewport.getViewport(), screenWidth);
     SDL_RenderPresent(renderer);
 }
