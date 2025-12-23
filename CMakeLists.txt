@@ -9,7 +9,7 @@ add_compile_options(-Wall -Wextra -Werror -pedantic -Wshadow -O0 -g)
 # Add the include directory for header files
 include_directories(include)
 
-set(SOURCES src/main.cpp src/game.cpp src/map.cpp src/viewport.cpp src/ant.cpp)
+set(SOURCES src/main.cpp src/game.cpp src/map.cpp src/viewport.cpp src/ant.cpp src/nest.cpp)
 
 find_package(SDL3 REQUIRED)
 find_package(SDL3_image REQUIRED)

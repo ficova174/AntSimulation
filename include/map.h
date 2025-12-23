@@ -8,7 +8,6 @@ public:
 
     float getWidth() const {return w;}
     float getHeight() const {return h;}
-    SDL_Texture* getTexture() const {return m_texture;}
 
     void init(SDL_Renderer *renderer);
     void render(SDL_Renderer *renderer, SDL_FRect gameViewport);

@@ -5,10 +5,6 @@
 #include "viewport.h"
 #include "map.h"
 
-float Viewport::getZoomFactor(float viewportChangeX) const {
-    return m_viewport.w / (m_viewport.w + viewportChangeX);
-}
-
 void Viewport::setCoordinates(const Map &map, float x, float y) {
     m_viewport.x = x;
     m_viewport.y = y;

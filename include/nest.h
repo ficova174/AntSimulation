@@ -3,9 +3,9 @@
 #include <SDL3/SDL.h>
 #include "map.h"
 
-class Ant {
+class Nest {
 public:
-    ~Ant();
+    ~Nest();
 
     void setCoordinates(const Map &map, float x, float y);
     
