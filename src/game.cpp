@@ -2,6 +2,7 @@
 #include "game.h"
 #include "map.h"
 #include "viewport.h"
+#include "nest.h"
 #include "ant.h"
 
 Game::~Game() {
@@ -54,8 +55,11 @@ bool Game::init(const char* appName, const char* creatorName) {
     viewport.setSize(map, screenWidth, screenHeight);
     viewport.setCoordinates(map, map.getWidth() / 2.0f, map.getHeight() / 2.0f);
 
+    nest.init(renderer);
     ant.init(renderer);
-    ant.setCoordinates(map, map.getWidth() / 2.0f + 100.0f, map.getHeight() / 2.0f + 100.0f);
+
+    nest.setCoordinates(map, map.getWidth() / 2.0f, map.getHeight() / 2.0f);
+    ant.setCoordinates(map, map.getWidth() / 2.0f, map.getHeight() / 2.0f);
 
     return true;
 }
@@ -124,13 +128,16 @@ void Game::handleMovements(const bool *keys, float deltaTime) {
     SDL_PumpEvents();
     viewport.move(map, keys, deltaTime);
 
-    SDL_PumpEvents();
     ant.move(map, keys, deltaTime);
 }
 
 void Game::render() {
     SDL_RenderClear(renderer);
+
     map.render(renderer, viewport.getViewport());
+
+    nest.render(renderer, viewport.getViewport(), screenWidth);
     ant.render(renderer, viewport.getViewport(), screenWidth);
+
     SDL_RenderPresent(renderer);
 }

@@ -3,6 +3,7 @@
 #include <SDL3/SDL.h>
 #include "map.h"
 #include "viewport.h"
+#include "nest.h"
 #include "ant.h"
 
 class Game {
@@ -24,6 +25,7 @@ private:
     // Objects declarations
     Map map;
     Viewport viewport;
+    Nest nest;
     Ant ant;
 
     // Screen dimensions

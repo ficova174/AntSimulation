@@ -8,6 +8,14 @@ Ant::~Ant() {
     SDL_DestroyTexture(m_texture);
 }
 
+void Ant::setCoordinates(const Map &map, float x, float y) {
+    m_ant.x = x;
+    m_ant.y = y;
+
+    m_ant.x = std::clamp(m_ant.x, 0.0f, map.getWidth() - m_ant.w);
+    m_ant.y = std::clamp(m_ant.y, 0.0f, map.getHeight() - m_ant.h);
+}
+
 void Ant::init(SDL_Renderer *renderer) {
     m_texture = IMG_LoadTexture(renderer, "../assets/ant.png");
 
@@ -20,24 +28,9 @@ void Ant::init(SDL_Renderer *renderer) {
         SDL_Log("Failed to get ant size: %s", SDL_GetError());
         return;
     }
-
-    m_ant.x = 0.0f;
-    m_ant.y = 0.0f;
-
-    m_viewport.w = m_ant.w;
-    m_viewport.h = m_ant.h;
-}
-
-void Ant::setCoordinates(const Map &map, float x, float y) {
-    m_ant.x = x;
-    m_ant.y = y;
-
-    m_ant.x = std::clamp(m_ant.x, 0.0f, map.getWidth() - m_ant.w);
-    m_ant.y = std::clamp(m_ant.y, 0.0f, map.getHeight() - m_ant.h);
 }
 
 void Ant::move(const Map &map, const bool *keys, float deltaTime) {
-    float currentSpeed{m_speed};
     float angleChange{m_rotationSpeed * deltaTime};
 
     if (keys[SDL_SCANCODE_Q]) {
@@ -46,12 +39,9 @@ void Ant::move(const Map &map, const bool *keys, float deltaTime) {
     if (keys[SDL_SCANCODE_E]) {
         m_direction += (m_direction < 360.0) ? angleChange : -360.0 + angleChange;
     }
-    if (keys[SDL_SCANCODE_SPACE]) {
-        currentSpeed *= m_dashFactor;
-    }
 
-    m_ant.x += currentSpeed * std::cos(m_direction * M_PI / 180.0) * deltaTime;
-    m_ant.y += currentSpeed * std::sin(m_direction * M_PI / 180.0) * deltaTime;
+    m_ant.x += m_speed * std::cos(m_direction * M_PI / 180.0) * deltaTime;
+    m_ant.y += m_speed * std::sin(m_direction * M_PI / 180.0) * deltaTime;
 
     m_ant.x = std::clamp(m_ant.x, 0.0f, map.getWidth() - m_ant.w);
     m_ant.y = std::clamp(m_ant.y, 0.0f, map.getHeight() - m_ant.h);

@@ -18,7 +18,6 @@ private:
     SDL_FRect m_ant{0.0f, 0.0f, 0.0f, 0.0f};
     SDL_FRect m_viewport{0.0f, 0.0f, 0.0f, 0.0f};
     static constexpr float m_speed{150.0f};
-    static constexpr float m_dashFactor{1.5f};
     double m_direction{0.0};
     static constexpr float m_rotationSpeed{300.0f};
 };
