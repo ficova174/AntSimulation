@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SDL3/SDL.h>
+#include <vector>
 #include "map.h"
 #include "viewport.h"
 #include "nest.h"
@@ -26,7 +27,7 @@ private:
     Map map;
     Viewport viewport;
     Nest nest;
-    Ant ant;
+    std::vector<Ant> ants{10};
 
     // Screen dimensions
     static constexpr float screenHeight{800.0f};

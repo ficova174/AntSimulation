@@ -10,7 +10,7 @@ public:
     void setCoordinates(const Map &map, float x, float y);
     
     void init(SDL_Renderer *renderer);
-    void move(const Map &map, const bool *keys, float deltaTime);
+    void move(const Map &map, float deltaTime);
     void render(SDL_Renderer *renderer, SDL_FRect gameViewport, float screenWidth);
 
 private:
@@ -18,6 +18,6 @@ private:
     SDL_FRect m_ant{0.0f, 0.0f, 0.0f, 0.0f};
     SDL_FRect m_viewport{0.0f, 0.0f, 0.0f, 0.0f};
     static constexpr float m_speed{150.0f};
-    double m_direction{0.0};
+    float m_direction{0.0f};
     static constexpr float m_rotationSpeed{300.0f};
 };

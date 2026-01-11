@@ -1,4 +1,6 @@
 #include <SDL3/SDL.h>
+#include <cstdlib>
+#include <ctime>
 #include "game.h"
 #include "map.h"
 #include "viewport.h"
@@ -12,7 +14,6 @@ Game::~Game() {
 }
 
 bool Game::init(const char* appName, const char* creatorName) {
-    // Metadata Initialization
     if (!SDL_SetAppMetadata(appName, nullptr, nullptr)) {
         SDL_Log("SDL_SetAppMetadata failed: %s", SDL_GetError());
         SDL_Quit();
@@ -37,7 +38,6 @@ bool Game::init(const char* appName, const char* creatorName) {
         return false;
     }
 
-    // SDL, window, renderer and map texture initialization
     if (!SDL_Init(SDL_INIT_VIDEO)) {
         SDL_Log("SDL_Init failed: %s", SDL_GetError());
         SDL_Quit();
@@ -56,10 +56,15 @@ bool Game::init(const char* appName, const char* creatorName) {
     viewport.setCoordinates(map, map.getWidth() / 2.0f, map.getHeight() / 2.0f);
 
     nest.init(renderer);
-    ant.init(renderer);
-
     nest.setCoordinates(map, map.getWidth() / 2.0f, map.getHeight() / 2.0f);
-    ant.setCoordinates(map, map.getWidth() / 2.0f, map.getHeight() / 2.0f);
+
+    for (Ant& ant : ants) {
+        ant.init(renderer);
+        ant.setCoordinates(map, map.getWidth() / 2.0f, map.getHeight() / 2.0f);
+    }
+
+    // Get a different random number each time the program runs
+    srand(time(0));
 
     return true;
 }
@@ -106,13 +111,10 @@ void Game::handleEvents(SDL_Event &event, bool &running) {
         switch (event.type) {
             case SDL_EVENT_QUIT:
                 running = false;
-                break;
+                return;
             case SDL_EVENT_MOUSE_WHEEL:
                 handleZoom(event);
                 break;
-        }
-        if (!running) {
-            break;
         }
     }
 }
@@ -126,9 +128,12 @@ void Game::handleZoom(SDL_Event &event) {
 
 void Game::handleMovements(const bool *keys, float deltaTime) {
     SDL_PumpEvents();
+
     viewport.move(map, keys, deltaTime);
 
-    ant.move(map, keys, deltaTime);
+    for (Ant& ant : ants) {
+        ant.move(map, deltaTime);
+    }
 }
 
 void Game::render() {
@@ -137,7 +142,10 @@ void Game::render() {
     map.render(renderer, viewport.getViewport());
 
     nest.render(renderer, viewport.getViewport(), screenWidth);
-    ant.render(renderer, viewport.getViewport(), screenWidth);
+
+    for (Ant& ant : ants) {
+        ant.render(renderer, viewport.getViewport(), screenWidth);
+    }
 
     SDL_RenderPresent(renderer);
 }

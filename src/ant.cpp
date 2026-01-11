@@ -2,6 +2,7 @@
 #include <SDL3_image/SDL_image.h>
 #include <cmath>
 #include <algorithm>
+#include <cstdlib>
 #include "ant.h"
 
 Ant::~Ant() {
@@ -30,18 +31,25 @@ void Ant::init(SDL_Renderer *renderer) {
     }
 }
 
-void Ant::move(const Map &map, const bool *keys, float deltaTime) {
-    float angleChange{m_rotationSpeed * deltaTime};
+void Ant::move(const Map &map, float deltaTime) {
+    float maxValue{2.0f};
+    // Random number between -1.0f and 1.0f
+    float randomChange = (static_cast<float>(rand()) / (static_cast<float>(RAND_MAX/maxValue)) - 1.0f);
+    float angleChange{m_rotationSpeed * randomChange * deltaTime};
 
-    if (keys[SDL_SCANCODE_Q]) {
-        m_direction -= (m_direction > -360.0) ? angleChange : -360.0 + angleChange;
+    m_direction += angleChange;
+
+    // We want to avoid floating-point overflow
+    // No chance to do more than one turn over one frame thanks to m_rotationSpeed
+    if (m_direction <= -360.0f) {
+        m_direction += 360.0f;
     }
-    if (keys[SDL_SCANCODE_E]) {
-        m_direction += (m_direction < 360.0) ? angleChange : -360.0 + angleChange;
+    else if (m_direction >= 360.f) {
+        m_direction -= 360.f;
     }
 
-    m_ant.x += m_speed * std::cos(m_direction * M_PI / 180.0) * deltaTime;
-    m_ant.y += m_speed * std::sin(m_direction * M_PI / 180.0) * deltaTime;
+    m_ant.x += m_speed * std::cos(m_direction * M_PI / 180.0f) * deltaTime;
+    m_ant.y += m_speed * std::sin(m_direction * M_PI / 180.0f) * deltaTime;
 
     m_ant.x = std::clamp(m_ant.x, 0.0f, map.getWidth() - m_ant.w);
     m_ant.y = std::clamp(m_ant.y, 0.0f, map.getHeight() - m_ant.h);
@@ -59,7 +67,7 @@ void Ant::render(SDL_Renderer *renderer, SDL_FRect gameViewport, float screenWid
     bool conditionY{m_ant.y + m_ant.h < gameViewport.y || m_ant.y > gameViewport.y + gameViewport.h};
 
     if (!conditionX && !conditionY) {
-        if (!SDL_RenderTextureRotated(renderer, m_texture, nullptr, &m_viewport, m_direction, nullptr, SDL_FLIP_NONE)) {
+        if (!SDL_RenderTextureRotated(renderer, m_texture, nullptr, &m_viewport, static_cast<double>(m_direction), nullptr, SDL_FLIP_NONE)) {
             SDL_Log("Failed to render the ant: %s", SDL_GetError());
         }
     }
