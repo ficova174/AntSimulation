@@ -50,21 +50,28 @@ bool Game::init(const char* appName, const char* creatorName) {
         return false;
     }
 
-    map.init(renderer);
+    // Get a different random number each time the program runs
+    srand(time(0));
+
+    if (!map.init(renderer)) {
+        SDL_Quit();
+        return false;
+    }
 
     viewport.setSize(map, screenWidth, screenHeight);
     viewport.setCoordinates(map, map.getWidth() / 2.0f, map.getHeight() / 2.0f);
 
-    nest.init(renderer);
-    nest.setCoordinates(map, map.getWidth() / 2.0f, map.getHeight() / 2.0f);
-
-    for (Ant& ant : ants) {
-        ant.init(renderer);
-        ant.setCoordinates(map, map.getWidth() / 2.0f, map.getHeight() / 2.0f);
+    if (!nest.init(map, renderer)) {
+        SDL_Quit();
+        return false;
     }
 
-    // Get a different random number each time the program runs
-    srand(time(0));
+    for (Ant& ant : ants) {
+        if (!ant.init(nest, renderer)) {
+            SDL_Quit();
+            return false;
+        }
+    }
 
     return true;
 }

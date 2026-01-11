@@ -2,6 +2,7 @@
 
 #include <SDL3/SDL.h>
 #include "map.h"
+#include "nest.h"
 
 class Ant {
 public:
@@ -9,9 +10,9 @@ public:
 
     void setCoordinates(const Map &map, float x, float y);
     
-    void init(SDL_Renderer *renderer);
-    void move(const Map &map, float deltaTime);
-    void render(SDL_Renderer *renderer, SDL_FRect gameViewport, float screenWidth);
+    bool init(const Nest &nest, SDL_Renderer *renderer);
+    void move(const Map &map, const float deltaTime);
+    void render(SDL_Renderer *renderer, SDL_FRect gameViewport, const float screenWidth);
 
 private:
     SDL_Texture *m_texture{nullptr};

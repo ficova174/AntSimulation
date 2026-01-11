@@ -7,9 +7,11 @@ class Nest {
 public:
     ~Nest();
 
-    void setCoordinates(const Map &map, float x, float y);
+    SDL_FRect getCoordinates() const {return m_nest;}
+
+    void setCoordinates(const Map& map, float x, float y);
     
-    void init(SDL_Renderer *renderer);
+    bool init(const Map& map, SDL_Renderer *renderer);
     void render(SDL_Renderer *renderer, SDL_FRect gameViewport, float screenWidth);
 
 private:

@@ -9,7 +9,7 @@ public:
     float getWidth() const {return w;}
     float getHeight() const {return h;}
 
-    void init(SDL_Renderer *renderer);
+    bool init(SDL_Renderer *renderer);
     void render(SDL_Renderer *renderer, SDL_FRect gameViewport);
 
 private:

@@ -3,6 +3,7 @@
 #include <cmath>
 #include <algorithm>
 #include <cstdlib>
+#include "nest.h"
 #include "ant.h"
 
 Ant::~Ant() {
@@ -17,21 +18,26 @@ void Ant::setCoordinates(const Map &map, float x, float y) {
     m_ant.y = std::clamp(m_ant.y, 0.0f, map.getHeight() - m_ant.h);
 }
 
-void Ant::init(SDL_Renderer *renderer) {
+bool Ant::init(const Nest& nest, SDL_Renderer *renderer) {
     m_texture = IMG_LoadTexture(renderer, "../assets/ant.png");
 
     if (!m_texture) {
         SDL_Log("Failed to load ant texture: %s", SDL_GetError());
-        return;
+        return false;
     }
 
     if (!SDL_GetTextureSize(m_texture, &m_ant.w, &m_ant.h)) {
         SDL_Log("Failed to get ant size: %s", SDL_GetError());
-        return;
+        return false;
     }
+    
+    m_ant.x = (nest.getCoordinates()).x;
+    m_ant.y = (nest.getCoordinates()).y;
+
+    return true;
 }
 
-void Ant::move(const Map &map, float deltaTime) {
+void Ant::move(const Map &map, const float deltaTime) {
     float maxValue{2.0f};
     // Random number between -1.0f and 1.0f
     float randomChange = (static_cast<float>(rand()) / (static_cast<float>(RAND_MAX/maxValue)) - 1.0f);
@@ -55,7 +61,7 @@ void Ant::move(const Map &map, float deltaTime) {
     m_ant.y = std::clamp(m_ant.y, 0.0f, map.getHeight() - m_ant.h);
 }
 
-void Ant::render(SDL_Renderer *renderer, SDL_FRect gameViewport, float screenWidth) {
+void Ant::render(SDL_Renderer *renderer, SDL_FRect gameViewport, const float screenWidth) {
     float scale = screenWidth / gameViewport.w;
 
     m_viewport.x = (m_ant.x - gameViewport.x) * scale;
@@ -66,7 +72,7 @@ void Ant::render(SDL_Renderer *renderer, SDL_FRect gameViewport, float screenWid
     bool conditionX{m_ant.x + m_ant.w < gameViewport.x || m_ant.x > gameViewport.x + gameViewport.w};
     bool conditionY{m_ant.y + m_ant.h < gameViewport.y || m_ant.y > gameViewport.y + gameViewport.h};
 
-    if (!conditionX && !conditionY) {
+    if ((!conditionX) && (!conditionY)) {
         if (!SDL_RenderTextureRotated(renderer, m_texture, nullptr, &m_viewport, static_cast<double>(m_direction), nullptr, SDL_FLIP_NONE)) {
             SDL_Log("Failed to render the ant: %s", SDL_GetError());
         }

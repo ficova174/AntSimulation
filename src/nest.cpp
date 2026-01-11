@@ -15,18 +15,23 @@ void Nest::setCoordinates(const Map &map, float x, float y) {
     m_nest.y = std::clamp(m_nest.y, 0.0f, map.getHeight() - m_nest.h);
 }
 
-void Nest::init(SDL_Renderer *renderer) {
+bool Nest::init(const Map& map, SDL_Renderer *renderer) {
     m_texture = IMG_LoadTexture(renderer, "../assets/nest.png");
 
     if (!m_texture) {
         SDL_Log("Failed to load nest texture: %s", SDL_GetError());
-        return;
+        return false;
     }
 
     if (!SDL_GetTextureSize(m_texture, &m_nest.w, &m_nest.h)) {
         SDL_Log("Failed to get nest size: %s", SDL_GetError());
-        return;
+        return false;
     }
+
+    m_nest.x = map.getWidth() / 2.0f;
+    m_nest.y = map.getHeight() / 2.0f;
+
+    return true;
 }
 
 void Nest::render(SDL_Renderer *renderer, SDL_FRect gameViewport, float screenWidth) {

@@ -6,17 +6,20 @@ Map::~Map() {
     SDL_DestroyTexture(m_texture);
 }
 
-void Map::init(SDL_Renderer *renderer) {
+bool Map::init(SDL_Renderer *renderer) {
     m_texture = IMG_LoadTexture(renderer, "../assets/map.png");
 
     if (!m_texture) {
         SDL_Log("Failed to load map texture: %s", SDL_GetError());
-        return;
+        return false;
     }
 
     if (!SDL_GetTextureSize(m_texture, &w, &h)) {
         SDL_Log("Failed to get map size: %s", SDL_GetError());
+        return false;
     }
+
+    return true;
 }
 
 void Map::render(SDL_Renderer *renderer, SDL_FRect gameViewport) {
