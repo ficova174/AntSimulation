@@ -1,0 +1,23 @@
+[gd_scene format=3 uid="uid://cq868o7nfmmud"]
+
+[ext_resource type="Script" uid="uid://bp8ndqth843cc" path="res://mouse_pheromones.gd" id="1_knoli"]
+[ext_resource type="Texture2D" uid="uid://b0rffgc66v8ex" path="res://icon.svg" id="2_cfoco"]
+[ext_resource type="Script" uid="uid://cdyqdbdjcc13l" path="res://camera_2d.gd" id="2_in3tr"]
+
+[node name="Node2D" type="Node2D" unique_id=653217629]
+script = ExtResource("1_knoli")
+
+[node name="SubViewport" type="SubViewport" parent="." unique_id=1689997383]
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=521797343]
+limit_left = 0
+limit_top = 0
+limit_smoothed = true
+position_smoothing_enabled = true
+script = ExtResource("2_in3tr")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=117499800]
+visible = false
+scale = Vector2(11.5390625, 7.9453125)
+texture = ExtResource("2_cfoco")
+centered = false

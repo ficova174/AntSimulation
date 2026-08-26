@@ -1,0 +1,20 @@
+[gd_scene format=3 uid="uid://cq868o7nfmmud"]
+
+[ext_resource type="Script" uid="uid://cdyqdbdjcc13l" path="res://scripts/camera_2d.gd" id="1_hggt5"]
+[ext_resource type="Texture2D" uid="uid://b0rffgc66v8ex" path="res://assets/icon.svg" id="2_t32qd"]
+[ext_resource type="Script" uid="uid://bn220wbhfy0sc" path="res://scripts/pheromones_view.gd" id="4_t32qd"]
+
+[node name="World" type="Node2D" unique_id=653217629]
+script = ExtResource("4_t32qd")
+
+[node name="SubViewport" type="SubViewport" parent="." unique_id=1689997383]
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=521797343]
+limit_enabled = false
+position_smoothing_enabled = true
+script = ExtResource("1_hggt5")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=117499800]
+scale = Vector2(11.5390625, 7.9453125)
+texture = ExtResource("2_t32qd")
+centered = false
