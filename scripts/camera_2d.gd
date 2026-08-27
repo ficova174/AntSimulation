@@ -8,7 +8,6 @@ var MIN_ZOOM: Vector2 = Vector2.ONE * 0.1
 
 func _input(event: InputEvent) -> void:
 	if not event.is_action_pressed("brush_size_up") and not event.is_action_pressed("brush_size_down"):
-		print(zoom)
 		if event.is_action_pressed("zoom_in"):
 			zoom += Vector2.ONE * zoom_speed
 		elif event.is_action_pressed("zoom_out") and zoom > MIN_ZOOM:
