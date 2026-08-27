@@ -2,10 +2,7 @@
 
 [ext_resource type="Script" uid="uid://cdyqdbdjcc13l" path="res://scripts/camera_2d.gd" id="1_hggt5"]
 [ext_resource type="Texture2D" uid="uid://crdmfq3j8gs8m" path="res://assets/1 Tiles/FieldsTileset.png" id="1_t32qd"]
-[ext_resource type="Shader" uid="uid://bw8uedmplujq1" path="res://shaders/pheromones.gdshader" id="3_hggt5"]
-[ext_resource type="Shader" uid="uid://ciggvq664lf21" path="res://shaders/drawing.gdshader" id="3_t32qd"]
-[ext_resource type="Script" uid="uid://tffu581xxbob" path="res://scripts/drawing_canvas.gd" id="5_t32qd"]
-[ext_resource type="Texture2D" uid="uid://b0rffgc66v8ex" path="res://assets/icon.svg" id="6_oddai"]
+[ext_resource type="Script" uid="uid://tffu581xxbob" path="res://scripts/pheromones.gd" id="5_t32qd"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_oddai"]
 texture = ExtResource("1_t32qd")
@@ -269,14 +266,6 @@ texture = ExtResource("1_t32qd")
 [sub_resource type="TileSet" id="TileSet_yidbq"]
 sources/0 = SubResource("TileSetAtlasSource_oddai")
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_oddai"]
-shader = ExtResource("3_t32qd")
-
-[sub_resource type="DrawableTexture2D" id="DrawableTexture2D_301ru"]
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_hggt5"]
-shader = ExtResource("3_hggt5")
-
 [node name="World" type="Node2D" unique_id=653217629]
 
 [node name="Map" type="TileMapLayer" parent="." unique_id=643492945]
@@ -288,13 +277,6 @@ limit_enabled = false
 position_smoothing_enabled = true
 script = ExtResource("1_hggt5")
 
-[node name="DrawingCanvas" type="Sprite2D" parent="." unique_id=708764766]
-material = SubResource("ShaderMaterial_oddai")
-position = Vector2(576, 324)
-texture = SubResource("DrawableTexture2D_301ru")
-script = ExtResource("5_t32qd")
-
 [node name="PheromonesMap" type="Sprite2D" parent="." unique_id=117499800]
-material = SubResource("ShaderMaterial_hggt5")
-texture = ExtResource("6_oddai")
 centered = false
+script = ExtResource("5_t32qd")

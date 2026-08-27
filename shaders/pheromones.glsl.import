@@ -1,0 +1,14 @@
+[remap]
+
+importer="glsl"
+type="RDShaderFile"
+uid="uid://bht64anqxu5g0"
+path="res://.godot/imported/pheromones.glsl-8935ae0a2a76886c500136e47d76647a.res"
+
+[deps]
+
+source_file="res://shaders/pheromones.glsl"
+dest_files=["res://.godot/imported/pheromones.glsl-8935ae0a2a76886c500136e47d76647a.res"]
+
+[params]
+
