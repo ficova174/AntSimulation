@@ -1,9 +1,9 @@
-extends Node2D
+extends Sprite2D
 
 
 var radius: float = 30.0
 var radius_delta: float = 1.0
-var circle_color: Color = Color.CYAN
+var circle_color: Color = Color.BLUE
 var filled: bool = false
 
 
