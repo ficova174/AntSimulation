@@ -75,7 +75,7 @@ func _input(event) -> void:
 	if event.is_action_pressed("brush_size_up"):
 		radius += radius_delta
 	elif event.is_action_pressed("brush_size_down"):
-		radius -= radius_delta
+		radius = radius - radius_delta if radius - radius_delta >= 1.0 else radius
 
 func _process(_delta: float) -> void:
 	var is_increase: bool = Input.is_action_pressed("increase")
@@ -103,7 +103,8 @@ func _process(_delta: float) -> void:
 	rd.compute_list_bind_compute_pipeline(compute_list, pipeline_rid)
 	rd.compute_list_bind_uniform_set(compute_list, current_set, shader_set)
 	rd.compute_list_set_push_constant(compute_list, push_constant, push_constant.size())
-	rd.compute_list_dispatch(compute_list, WIDTH, HEIGHT, 1)
+	# Look at the local size of workgroup in shader
+	rd.compute_list_dispatch(compute_list, WIDTH / 16, HEIGHT / 16, 1)
 	rd.compute_list_end()
 
 	display_tex.texture_rd_rid = current_output
