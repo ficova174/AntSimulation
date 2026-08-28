@@ -31,7 +31,6 @@ func _ready() -> void:
 
 	var shader_file: Resource = load("res://shaders/pheromones.glsl")
 	shader_rid = rd.shader_create_from_spirv(shader_file.get_spirv())
-	pipeline_rid = rd.compute_pipeline_create(shader_rid)
 
 	var tf: RDTextureFormat = RDTextureFormat.new()
 	# Format must match the data format specified in the shader
@@ -51,7 +50,8 @@ func _ready() -> void:
 	display_tex = Texture2DRD.new()
 	display_tex.texture_rd_rid = tex_a
 	self.texture = display_tex
-	rd.texture_clear(tex_a, Color(0.0, 0.0, 1.0, 1.0), 0, 1, 0, 1)
+	rd.texture_clear(tex_a, Color(0.0, 0.0, 0.0, 1.0), 0, 1, 0, 1)
+	rd.texture_clear(tex_b, Color(0.0, 0.0, 0.0, 1.0), 0, 1, 0, 1)
 
 	uniform_set_a_to_b = _create_set(tex_a, tex_b)
 	uniform_set_b_to_a = _create_set(tex_b, tex_a)
@@ -78,11 +78,23 @@ func _input(event) -> void:
 		radius -= radius_delta
 
 func _process(_delta: float) -> void:
-	#if Input.is_action_pressed("increase"):
-		#texture.blit()
-	#elif Input.is_action_pressed("decrease"):
-		#texture.blit()
-	#queue_redraw()
+	var is_increase: bool = Input.is_action_pressed("increase")
+	var is_decrease: bool = Input.is_action_pressed("decrease")
+	var clicked: bool = is_increase or is_decrease
+	var blend_add: bool = is_increase
+
+	var mouse_pos: Vector2 = get_local_mouse_position()
+
+	var push_constant: PackedByteArray = PackedByteArray()
+	push_constant.resize(24)
+	# Like in cpp bool is stored as int
+	push_constant.encode_s32(0, int(clicked))
+	# Star at 8 not 4 because total size of vec2 is 8 bytes
+	# and the offset must be a multiple of the size
+	push_constant.encode_float(8, mouse_pos.x)
+	push_constant.encode_float(12, mouse_pos.y)
+	push_constant.encode_float(16, radius)
+	push_constant.encode_s32(20, int(blend_add))
 
 	var current_set: RID = uniform_set_a_to_b if not step_toggle else uniform_set_b_to_a
 	var current_output: RID = tex_b if not step_toggle else tex_a
@@ -90,10 +102,14 @@ func _process(_delta: float) -> void:
 	var compute_list: int = rd.compute_list_begin()
 	rd.compute_list_bind_compute_pipeline(compute_list, pipeline_rid)
 	rd.compute_list_bind_uniform_set(compute_list, current_set, shader_set)
-	rd.compute_list_dispatch(compute_list, HEIGHT, WIDTH, 1)
+	rd.compute_list_set_push_constant(compute_list, push_constant, push_constant.size())
+	rd.compute_list_dispatch(compute_list, WIDTH, HEIGHT, 1)
 	rd.compute_list_end()
 
 	display_tex.texture_rd_rid = current_output
+	step_toggle = not step_toggle
+
+	queue_redraw()
 
 func _draw() -> void:
 	draw_circle(get_local_mouse_position(), radius, circle_color, filled)
