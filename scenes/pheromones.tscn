@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://cdyqdbdjcc13l" path="res://scripts/camera_2d.gd" id="1_hggt5"]
 [ext_resource type="Texture2D" uid="uid://crdmfq3j8gs8m" path="res://assets/1 Tiles/FieldsTileset.png" id="1_t32qd"]
+[ext_resource type="Texture2D" uid="uid://baes3pftkpay3" path="res://assets/ant.png" id="4_hggt5"]
 [ext_resource type="Script" uid="uid://tffu581xxbob" path="res://scripts/pheromones.gd" id="5_t32qd"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_oddai"]
@@ -280,3 +281,8 @@ script = ExtResource("1_hggt5")
 [node name="PheromonesMap" type="Sprite2D" parent="." unique_id=117499800]
 centered = false
 script = ExtResource("5_t32qd")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1427428793]
+texture_filter = 1
+position = Vector2(357, 165)
+texture = ExtResource("4_hggt5")
