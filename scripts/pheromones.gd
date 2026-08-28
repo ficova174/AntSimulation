@@ -34,12 +34,14 @@ func _ready() -> void:
 	pipeline_rid = rd.compute_pipeline_create(shader_rid)
 
 	var tf: RDTextureFormat = RDTextureFormat.new()
-	# Warning not all R8G8B8A8 types seem to work
+	# Format must match the data format specified in the shader
 	tf.format = RenderingDevice.DATA_FORMAT_R8G8B8A8_UNORM
 	tf.texture_type = RenderingDevice.TEXTURE_TYPE_2D
 	# Sampling bit -> necessary to display
+	# Can copy to bit -> for texture_clear
 	tf.usage_bits = RenderingDevice.TEXTURE_USAGE_SAMPLING_BIT \
-					| RenderingDevice.TEXTURE_USAGE_STORAGE_BIT
+					| RenderingDevice.TEXTURE_USAGE_STORAGE_BIT \
+					| RenderingDevice.TEXTURE_USAGE_CAN_COPY_TO_BIT
 	tf.height = HEIGHT
 	tf.width = WIDTH
 
@@ -49,6 +51,7 @@ func _ready() -> void:
 	display_tex = Texture2DRD.new()
 	display_tex.texture_rd_rid = tex_a
 	self.texture = display_tex
+	rd.texture_clear(tex_a, Color(0.0, 0.0, 1.0, 1.0), 0, 1, 0, 1)
 
 	uniform_set_a_to_b = _create_set(tex_a, tex_b)
 	uniform_set_b_to_a = _create_set(tex_b, tex_a)
@@ -87,7 +90,7 @@ func _process(_delta: float) -> void:
 	var compute_list: int = rd.compute_list_begin()
 	rd.compute_list_bind_compute_pipeline(compute_list, pipeline_rid)
 	rd.compute_list_bind_uniform_set(compute_list, current_set, shader_set)
-	rd.compute_list_dispatch(compute_list, ceili(WIDTH / 8.0), ceili(HEIGHT / 8.0), 1)
+	rd.compute_list_dispatch(compute_list, HEIGHT, WIDTH, 1)
 	rd.compute_list_end()
 
 	display_tex.texture_rd_rid = current_output
