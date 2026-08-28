@@ -1,8 +1,8 @@
 extends Sprite2D
 
 
-const HEIGHT: int = 1024
-const WIDTH: int = 1024
+const HEIGHT: int = 256
+const WIDTH: int = 256
 
 var radius: float = 30.0
 var radius_delta: float = 1.0
@@ -50,8 +50,8 @@ func _ready() -> void:
 	display_tex = Texture2DRD.new()
 	display_tex.texture_rd_rid = tex_a
 	self.texture = display_tex
-	rd.texture_clear(tex_a, Color(0.0, 0.0, 0.0, 1.0), 0, 1, 0, 1)
-	rd.texture_clear(tex_b, Color(0.0, 0.0, 0.0, 1.0), 0, 1, 0, 1)
+	rd.texture_clear(tex_a, Color(0.0, 0.0, 1.0, 1.0), 0, 1, 0, 1)
+	rd.texture_clear(tex_b, Color(0.0, 0.0, 1.0, 1.0), 0, 1, 0, 1)
 
 	uniform_set_a_to_b = _create_set(tex_a, tex_b)
 	uniform_set_b_to_a = _create_set(tex_b, tex_a)
@@ -77,7 +77,7 @@ func _input(event) -> void:
 	elif event.is_action_pressed("brush_size_down"):
 		radius = radius - radius_delta if radius - radius_delta >= 1.0 else radius
 
-func _process(_delta: float) -> void:
+func _physics_process(_delta: float) -> void:
 	var is_increase: bool = Input.is_action_pressed("increase")
 	var is_decrease: bool = Input.is_action_pressed("decrease")
 	var clicked: bool = is_increase or is_decrease
@@ -86,7 +86,7 @@ func _process(_delta: float) -> void:
 	var mouse_pos: Vector2 = get_local_mouse_position()
 
 	var push_constant: PackedByteArray = PackedByteArray()
-	push_constant.resize(24)
+	push_constant.resize(28)
 	# Like in cpp bool is stored as int
 	push_constant.encode_s32(0, int(clicked))
 	# Star at 8 not 4 because total size of vec2 is 8 bytes
@@ -95,6 +95,7 @@ func _process(_delta: float) -> void:
 	push_constant.encode_float(12, mouse_pos.y)
 	push_constant.encode_float(16, radius)
 	push_constant.encode_s32(20, int(blend_add))
+	push_constant.encode_float(24, _delta)
 
 	var current_set: RID = uniform_set_a_to_b if not step_toggle else uniform_set_b_to_a
 	var current_output: RID = tex_b if not step_toggle else tex_a
@@ -107,8 +108,11 @@ func _process(_delta: float) -> void:
 	rd.compute_list_dispatch(compute_list, WIDTH / 16, HEIGHT / 16, 1)
 	rd.compute_list_end()
 
-	display_tex.texture_rd_rid = current_output
 	step_toggle = not step_toggle
+
+func _process(_delta: float) -> void:
+	var latest_output: RID = tex_b if step_toggle else tex_a
+	display_tex.texture_rd_rid = latest_output
 
 	queue_redraw()
 
