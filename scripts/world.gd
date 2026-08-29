@@ -43,7 +43,7 @@ func _ready() -> void:
 	_init_ants()
 
 func _init_pheromones() -> void:
-	var pheromones_shader_file: Resource = load("res://shaders/pheromones.glsl")
+	var pheromones_shader_file: Resource = preload("res://shaders/pheromones.glsl")
 	pheromones_shader = rd.shader_create_from_spirv(pheromones_shader_file.get_spirv())
 	pheromones_pipeline = rd.compute_pipeline_create(pheromones_shader)
 
@@ -85,7 +85,7 @@ func _create_set_pheromones(read_tex: RID, write_tex: RID) -> RID:
 	return rd.uniform_set_create([u_read, u_write], pheromones_shader, shader_set)
 
 func _init_ants() -> void:
-	var ants_shader_file: Resource = load("res://shaders/ants.glsl")
+	var ants_shader_file: Resource = preload("res://shaders/ants.glsl")
 	ants_shader = rd.shader_create_from_spirv(ants_shader_file.get_spirv())
 	ants_pipeline = rd.compute_pipeline_create(ants_shader)
 
@@ -97,6 +97,7 @@ func _init_ants() -> void:
 
 	for i in range(NUM_ANTS):
 		var offset: int = i * ant_data_size
+
 		var angle: float = randf() * TAU
 		var pos: Vector2 = center + Vector2(cos(angle), sin(angle)) * (randf() * 20.0)
 
