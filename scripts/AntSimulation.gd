@@ -1,7 +1,7 @@
 extends Node2D
 
 
-const NUM_ANTS: int = 20
+const NUM_ANTS: int = 100
 const HEIGHT: int = 2048
 const WIDTH: int = 2048
 
@@ -177,7 +177,9 @@ func _compute_ants(delta: float) -> void:
 	rd.compute_list_bind_uniform_set(compute_list, current_set, shader_set)
 	rd.compute_list_set_push_constant(compute_list, push_constant, push_constant.size())
 	# Look at the local size of a workgroup in the shader file
-	rd.compute_list_dispatch(compute_list, NUM_ANTS, 1, 1)
+	var group_size_x: int = 64
+	var dispatch_x: int = ceili(NUM_ANTS / float(group_size_x))
+	rd.compute_list_dispatch(compute_list, dispatch_x, 1, 1)
 	rd.compute_list_end()
 
 func _compute_pheromones(delta: float) -> void:
@@ -206,7 +208,10 @@ func _compute_pheromones(delta: float) -> void:
 	rd.compute_list_bind_uniform_set(compute_list, current_set, shader_set)
 	rd.compute_list_set_push_constant(compute_list, push_constant, push_constant.size())
 	# Look at the local size of a workgroup in the shader file
-	rd.compute_list_dispatch(compute_list, WIDTH / 16, HEIGHT / 16, 1)
+	var group_size_x_y: int = 16
+	var dispatch_x: int = WIDTH / group_size_x_y
+	var dispatch_y: int = HEIGHT / group_size_x_y
+	rd.compute_list_dispatch(compute_list, dispatch_x, dispatch_y, 1)
 	rd.compute_list_end()
 
 func _process(_delta: float) -> void:

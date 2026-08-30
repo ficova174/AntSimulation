@@ -17,7 +17,7 @@ layout(std430, set = 0, binding = 0) buffer Ants {
 
 layout(rgba8, set = 0, binding = 1) uniform restrict image2D pheromones;
 
-layout(local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
+layout(local_size_x = 64, local_size_y = 1, local_size_z = 1) in;
 
 void main() {
     uint id = gl_GlobalInvocationID.x;
