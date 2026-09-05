@@ -1,6 +1,8 @@
 extends Camera2D
 
 
+@export var config: SimulationConfig
+
 @export var move_speed: float = 500.0
 @export var zoom_speed: float = 0.1
 @export var MIN_ZOOM: Vector2 = Vector2.ONE * 0.2
@@ -29,4 +31,5 @@ func _process(delta: float) -> void:
 	queue_redraw()
 
 func _draw() -> void:
-	draw_circle(get_local_mouse_position(), radius, circle_color, filled)
+	var phero_radius: float = config.world_to_phero_ratio() * radius
+	draw_circle(get_local_mouse_position(), phero_radius, circle_color, filled)

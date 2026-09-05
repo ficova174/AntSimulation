@@ -7,14 +7,14 @@ var shader_set: int = 0
 var step_toggle: bool = false
 
 
-func init(width: int, height: int, colony_positions: Array[Vector2]) -> void:
+func init(size: Vector2, colony_positions: Array[Vector2]) -> void:
 	var rd: RenderingDevice = RenderingServer.get_rendering_device()
-	pheromones_manager.init(rd, shader_set, width, height)
+	pheromones_manager.init(rd, shader_set, size)
 	ants_manager.init(
-		rd, 
-		shader_set, 
-		pheromones_manager.pheromones_tex_a, 
-		pheromones_manager.pheromones_tex_b, 
+		rd,
+		shader_set,
+		pheromones_manager.pheromones_tex_a,
+		pheromones_manager.pheromones_tex_b,
 		colony_positions
 	)
 

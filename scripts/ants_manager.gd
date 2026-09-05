@@ -1,6 +1,8 @@
 extends Node2D
 
 
+@export var config: SimulationConfig
+
 @export var ants_per_colony: int = 50
 var total_ants: int = 0
 

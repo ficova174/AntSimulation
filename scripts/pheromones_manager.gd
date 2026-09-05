@@ -1,5 +1,6 @@
 extends Node2D
 
+@export var config: SimulationConfig
 
 var rd: RenderingDevice
 var pheromones_shader_file: Resource = preload("res://shaders/pheromones.glsl")
@@ -17,13 +18,13 @@ var uniform_set_b_to_a: RID
 var display_pheromones_tex: Texture2DRD
 
 
-func init(shared_rd: RenderingDevice, s_set: int, width: int, height: int) -> void:
+func init(shared_rd: RenderingDevice, s_set: int, size: Vector2) -> void:
 	rd = shared_rd
 	shader_set = s_set
 	pheromones_shader = rd.shader_create_from_spirv(pheromones_shader_file.get_spirv())
 	pheromones_pipeline = rd.compute_pipeline_create(pheromones_shader)
 
-	var tf: RDTextureFormat = _create_texture_format(width, height)
+	var tf: RDTextureFormat = _create_texture_format(size.x, size.y)
 	pheromones_tex_a = rd.texture_create(tf, RDTextureView.new())
 	pheromones_tex_b = rd.texture_create(tf, RDTextureView.new())
 
@@ -31,6 +32,8 @@ func init(shared_rd: RenderingDevice, s_set: int, width: int, height: int) -> vo
 
 	uniform_set_a_to_b = _create_set_pheromones(pheromones_tex_a, pheromones_tex_b)
 	uniform_set_b_to_a = _create_set_pheromones(pheromones_tex_b, pheromones_tex_a)
+
+	$PheromonesMap.scale = Vector2.ONE / config.world_to_phero_ratio()
 
 func _create_texture_format(width: int, height: int) -> RDTextureFormat:
 	var tf: RDTextureFormat = RDTextureFormat.new()
@@ -77,7 +80,7 @@ func compute_pheromones(delta: float, step_toggle: bool) -> void:
 	var mouse_pos: Vector2 = get_local_mouse_position()
 
 	var push_constant: PackedByteArray = PackedByteArray()
-	push_constant.resize(28)
+	push_constant.resize(32)
 	# Like in cpp bool is stored as int
 	push_constant.encode_s32(0, int(clicked))
 	# Start at 8 not 4 because total size of vec2 is 8 bytes
@@ -86,7 +89,8 @@ func compute_pheromones(delta: float, step_toggle: bool) -> void:
 	push_constant.encode_float(12, mouse_pos.y)
 	push_constant.encode_float(16, Brush.radius)
 	push_constant.encode_s32(20, int(blend_add))
-	push_constant.encode_float(24, delta)
+	push_constant.encode_float(24, config.world_to_phero_ratio())
+	push_constant.encode_float(28, delta)
 
 	var compute_list: int = rd.compute_list_begin()
 	rd.compute_list_bind_compute_pipeline(compute_list, pheromones_pipeline)

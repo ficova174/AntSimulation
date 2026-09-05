@@ -7,6 +7,7 @@ layout(push_constant, std430) uniform Params {
     vec2 center_pos;
     float radius;
     bool blend_add;
+    float world_to_phero_ratio;
 
     float time_elapsed;
 } params;
@@ -21,7 +22,9 @@ void main() {
     ivec2 uv = ivec2(gl_GlobalInvocationID.xy);
     vec4 current_v = imageLoad(input_image, uv);
 
-    if (params.clicked && distance(params.center_pos, vec2(uv)) <= params.radius) {
+    vec2 center_pos_phero = params.world_to_phero_ratio * params.center_pos;
+
+    if (params.clicked && distance(center_pos_phero, vec2(uv)) <= params.radius) {
         if (params.blend_add) {
             current_v.r = 1.0;
             current_v.b = 0.0;
