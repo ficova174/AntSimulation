@@ -1,0 +1,15 @@
+[gd_scene format=3 uid="uid://cq868o7nfmmud"]
+
+[ext_resource type="Script" uid="uid://cxu7a8hdb8yji" path="res://scripts/world.gd" id="1_7g83o"]
+[ext_resource type="Script" uid="uid://cdyqdbdjcc13l" path="res://scripts/camera_2d.gd" id="2_d1c63"]
+
+[node name="World" type="Node2D" unique_id=653217629]
+script = ExtResource("1_7g83o")
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=521797343]
+position = Vector2(576, 324)
+limit_enabled = false
+position_smoothing_enabled = true
+script = ExtResource("2_d1c63")
+
+[node name="AntColonyContainer" type="Node2D" parent="." unique_id=596358927]

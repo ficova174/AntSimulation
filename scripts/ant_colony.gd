@@ -1,9 +1,7 @@
 extends Node2D
 
 
-const NUM_ANTS: int = 100
-const HEIGHT: int = 2048
-const WIDTH: int = 2048
+@export var num_ants: int = 1
 
 var radius: float = 30.0
 var radius_delta: float = 1.0
@@ -43,16 +41,16 @@ var ant_sprites: Array[Sprite2D] = []
 var ant_texture: Resource = preload("res://assets/ant.png")
 
 
-func _ready() -> void:
+func _init(width: int, height: int) -> void:
 	rd = RenderingServer.get_rendering_device()
-	_init_pheromones()
+	_init_pheromones(width, height)
 	_init_ants()
 
-func _init_pheromones() -> void:
+func _init_pheromones(width: int, height: int) -> void:
 	pheromones_shader = rd.shader_create_from_spirv(pheromones_shader_file.get_spirv())
 	pheromones_pipeline = rd.compute_pipeline_create(pheromones_shader)
 
-	var tf: RDTextureFormat = _create_texture_format()
+	var tf: RDTextureFormat = _create_texture_format(width, height)
 	pheromones_tex_a = rd.texture_create(tf, RDTextureView.new())
 	pheromones_tex_b = rd.texture_create(tf, RDTextureView.new())
 
@@ -61,7 +59,7 @@ func _init_pheromones() -> void:
 	uniform_set_a_to_b = _create_set_pheromones(pheromones_tex_a, pheromones_tex_b)
 	uniform_set_b_to_a = _create_set_pheromones(pheromones_tex_b, pheromones_tex_a)
 
-func _create_texture_format() -> RDTextureFormat:
+func _create_texture_format(width: int, height: int) -> RDTextureFormat:
 	var tf: RDTextureFormat = RDTextureFormat.new()
 	# Format must match the data format specified in the shader
 	tf.format = RenderingDevice.DATA_FORMAT_R8G8B8A8_UNORM
@@ -71,8 +69,8 @@ func _create_texture_format() -> RDTextureFormat:
 	tf.usage_bits = RenderingDevice.TEXTURE_USAGE_SAMPLING_BIT \
 					| RenderingDevice.TEXTURE_USAGE_STORAGE_BIT \
 					| RenderingDevice.TEXTURE_USAGE_CAN_COPY_TO_BIT
-	tf.height = HEIGHT
-	tf.width = WIDTH
+	tf.width = width
+	tf.height = height
 
 	return tf
 
@@ -108,11 +106,11 @@ func _init_ants() -> void:
 func _create_ants_buffer() -> RID:
 	var ants_data: PackedByteArray = PackedByteArray()
 	var ant_data_size: int = 16
-	ants_data.resize(NUM_ANTS * ant_data_size)
+	ants_data.resize(num_ants * ant_data_size)
 
-	var center: Vector2 = Vector2(WIDTH * 0.5, HEIGHT * 0.5)
+	var center: Vector2 = Vector2(display_pheromones_tex.get_width() * 0.5, display_pheromones_tex.get_height() * 0.5)
 
-	for i in range(NUM_ANTS):
+	for i in range(num_ants):
 		var offset: int = i * ant_data_size
 
 		var angle: float = randf() * TAU
@@ -178,7 +176,7 @@ func _compute_ants(delta: float) -> void:
 	rd.compute_list_set_push_constant(compute_list, push_constant, push_constant.size())
 	# Look at the local size of a workgroup in the shader file
 	var group_size_x: int = 64
-	var dispatch_x: int = ceili(NUM_ANTS / float(group_size_x))
+	var dispatch_x: int = ceili(num_ants / float(group_size_x))
 	rd.compute_list_dispatch(compute_list, dispatch_x, 1, 1)
 	rd.compute_list_end()
 
@@ -209,14 +207,14 @@ func _compute_pheromones(delta: float) -> void:
 	rd.compute_list_set_push_constant(compute_list, push_constant, push_constant.size())
 	# Look at the local size of a workgroup in the shader file
 	var group_size_x_y: int = 16
-	var dispatch_x: int = WIDTH / group_size_x_y
-	var dispatch_y: int = HEIGHT / group_size_x_y
+	var dispatch_x: int = display_pheromones_tex.get_width() / group_size_x_y
+	var dispatch_y: int = display_pheromones_tex.get_height() / group_size_x_y
 	rd.compute_list_dispatch(compute_list, dispatch_x, dispatch_y, 1)
 	rd.compute_list_end()
 
 func _process(_delta: float) -> void:
 	var raw_data: PackedByteArray = rd.buffer_get_data(ants_buffer)
-	for i in range(NUM_ANTS):
+	for i in range(num_ants):
 		var offset: int = i * 16
 		var pos_x: float = raw_data.decode_float(offset + 0)
 		var pos_y: float = raw_data.decode_float(offset + 4)

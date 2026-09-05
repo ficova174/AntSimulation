@@ -1,0 +1,12 @@
+[gd_scene format=3 uid="uid://03ysqelhivt2"]
+
+[ext_resource type="Script" uid="uid://tffu581xxbob" path="res://scripts/ant_colony.gd" id="1_odci4"]
+
+[node name="AntColony" type="Node2D" unique_id=725558081]
+script = ExtResource("1_odci4")
+
+[node name="PheromonesMap" type="Sprite2D" parent="." unique_id=81453819]
+texture_filter = 1
+centered = false
+
+[node name="AntsContainer" type="Node2D" parent="." unique_id=636578933]
