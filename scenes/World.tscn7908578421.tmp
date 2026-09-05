@@ -28,6 +28,4 @@ centered = false
 [node name="AntsManager" type="Node2D" parent="SimulationManager" unique_id=1240313712]
 script = ExtResource("5_1lgw5")
 
-[node name="AntsContainer" type="Node2D" parent="SimulationManager/AntsManager" unique_id=548076128]
-
 [node name="AntColonyContainer" type="Node2D" parent="." unique_id=596358927]

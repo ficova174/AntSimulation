@@ -4,7 +4,7 @@
 [ext_resource type="Script" uid="uid://cdyqdbdjcc13l" path="res://scripts/camera_2d.gd" id="2_d1c63"]
 [ext_resource type="Script" uid="uid://d3wjcmhyym3q" path="res://scripts/pheromones_manager.gd" id="3_7g83o"]
 [ext_resource type="Script" uid="uid://d0kllmfvb535w" path="res://scripts/simulation_manager.gd" id="3_d1c63"]
-[ext_resource type="Script" uid="uid://cudwwbd01ydld" path="res://scripts/ants_manager.gd" id="5_1lgw5"]
+[ext_resource type="Script" uid="uid://cudwwbd01ydld" path="res://scenes/ants_manager.gd" id="5_1lgw5"]
 
 [node name="World" type="Node2D" unique_id=653217629]
 script = ExtResource("1_7g83o")
@@ -27,7 +27,5 @@ centered = false
 
 [node name="AntsManager" type="Node2D" parent="SimulationManager" unique_id=1240313712]
 script = ExtResource("5_1lgw5")
-
-[node name="AntsContainer" type="Node2D" parent="SimulationManager/AntsManager" unique_id=548076128]
 
 [node name="AntColonyContainer" type="Node2D" parent="." unique_id=596358927]

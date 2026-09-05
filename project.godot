@@ -14,6 +14,10 @@ config/name="AntSimulation"
 run/main_scene="uid://cq868o7nfmmud"
 config/features=PackedStringArray("4.7", "Forward Plus")
 
+[autoload]
+
+Brush="*uid://demd8gjn3ef2d"
+
 [display]
 
 window/stretch/mode="canvas_items"
