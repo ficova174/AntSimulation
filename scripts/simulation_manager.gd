@@ -7,10 +7,16 @@ var shader_set: int = 0
 var step_toggle: bool = false
 
 
-func init(width: int, height: int) -> void:
+func init(width: int, height: int, colony_positions: Array[Vector2]) -> void:
 	var rd: RenderingDevice = RenderingServer.get_rendering_device()
 	pheromones_manager.init(rd, shader_set, width, height)
-	ants_manager.init(rd, shader_set, pheromones_manager.pheromones_tex_a, pheromones_manager.pheromones_tex_b)
+	ants_manager.init(
+		rd, 
+		shader_set, 
+		pheromones_manager.pheromones_tex_a, 
+		pheromones_manager.pheromones_tex_b, 
+		colony_positions
+	)
 
 func _physics_process(delta: float) -> void:
 	ants_manager.compute_ants(delta, step_toggle)
@@ -19,5 +25,5 @@ func _physics_process(delta: float) -> void:
 	step_toggle = not step_toggle
 
 func _process(_delta: float) -> void:
-	ants_manager.update_visuals()
-	pheromones_manager.update_display(step_toggle)
+	ants_manager.update_sprites()
+	pheromones_manager.update_sprite(step_toggle)

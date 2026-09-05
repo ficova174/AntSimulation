@@ -99,7 +99,7 @@ func compute_pheromones(delta: float, step_toggle: bool) -> void:
 	rd.compute_list_dispatch(compute_list, dispatch_x, dispatch_y, 1)
 	rd.compute_list_end()
 
-func update_display(step_toggle: bool) -> void:
+func update_sprite(step_toggle: bool) -> void:
 	var latest_tex: RID = pheromones_tex_b if step_toggle else pheromones_tex_a
 	display_pheromones_tex.texture_rd_rid = latest_tex
 
