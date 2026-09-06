@@ -27,3 +27,6 @@ func _physics_process(delta: float) -> void:
 func _process(_delta: float) -> void:
 	ants_manager.update_sprites()
 	pheromones_manager.update_sprite(step_toggle)
+
+func set_brush_radius(new_radius: float) -> void:
+	pheromones_manager.set_brush_radius(new_radius)

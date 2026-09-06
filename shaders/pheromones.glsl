@@ -23,8 +23,9 @@ void main() {
     vec4 current_v = imageLoad(input_image, uv);
 
     vec2 center_pos_phero = params.world_to_phero_ratio * params.center_pos;
+    float radius_phero = params.world_to_phero_ratio * params.radius;
 
-    if (params.clicked && distance(center_pos_phero, vec2(uv)) <= params.radius) {
+    if (params.clicked && distance(center_pos_phero, vec2(uv)) <= radius_phero) {
         if (params.blend_add) {
             current_v.r = 1.0;
             current_v.b = 0.0;

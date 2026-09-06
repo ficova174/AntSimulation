@@ -6,6 +6,7 @@ extends Node2D
 
 @onready var simulation_manager: Node2D = $SimulationManager
 @onready var colony_container: Node2D = $AntColonyContainer
+@onready var brush: Node2D = $Brush
 
 
 func _ready() -> void:
@@ -18,7 +19,14 @@ func _ready() -> void:
 
 	simulation_manager.init(config.pheromones_size, colony_positions)
 
+	brush.brush_radius_changed.connect(_on_brush_radius_changed)
+	# to initialize PheromonesManager
+	simulation_manager.set_brush_radius(brush.radius)
+
 func _create_ant_colony(pos: Vector2) -> void:
 	var ant_colony = preload("res://scenes/AntColony.tscn").instantiate()
 	ant_colony.init(pos)
 	colony_container.add_child(ant_colony)
+
+func _on_brush_radius_changed(new_radius: float) -> void:
+	simulation_manager.set_brush_radius(new_radius)

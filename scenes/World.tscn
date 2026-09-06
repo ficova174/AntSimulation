@@ -5,9 +5,10 @@
 [ext_resource type="Script" uid="uid://drhxjt6kpfm8y" path="res://scripts/simulation_config.gd" id="2_hlk0d"]
 [ext_resource type="Script" uid="uid://d3wjcmhyym3q" path="res://scripts/pheromones_manager.gd" id="3_7g83o"]
 [ext_resource type="Script" uid="uid://d0kllmfvb535w" path="res://scripts/simulation_manager.gd" id="3_d1c63"]
+[ext_resource type="Script" uid="uid://demd8gjn3ef2d" path="res://scripts/brush.gd" id="4_0uv0p"]
 [ext_resource type="Script" uid="uid://cudwwbd01ydld" path="res://scripts/ants_manager.gd" id="5_1lgw5"]
 
-[sub_resource type="Resource" id="Resource_0uv0p"]
+[sub_resource type="Resource" id="Resource_6sx1l"]
 script = ExtResource("2_hlk0d")
 metadata/_custom_type_script = "uid://drhxjt6kpfm8y"
 
@@ -15,7 +16,7 @@ metadata/_custom_type_script = "uid://drhxjt6kpfm8y"
 script = ExtResource("2_hlk0d")
 metadata/_custom_type_script = "uid://drhxjt6kpfm8y"
 
-[sub_resource type="Resource" id="Resource_ubxs6"]
+[sub_resource type="Resource" id="Resource_pdh0q"]
 script = ExtResource("2_hlk0d")
 metadata/_custom_type_script = "uid://drhxjt6kpfm8y"
 
@@ -25,13 +26,16 @@ metadata/_custom_type_script = "uid://drhxjt6kpfm8y"
 
 [node name="World" type="Node2D" unique_id=653217629]
 script = ExtResource("1_7g83o")
-config = SubResource("Resource_0uv0p")
+config = SubResource("Resource_6sx1l")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=521797343]
 position = Vector2(576, 324)
 limit_enabled = false
 position_smoothing_enabled = true
 script = ExtResource("2_d1c63")
+
+[node name="Brush" type="Node2D" parent="." unique_id=1331728610]
+script = ExtResource("4_0uv0p")
 config = SubResource("Resource_b3faq")
 
 [node name="SimulationManager" type="Node2D" parent="." unique_id=561506022]
@@ -39,7 +43,7 @@ script = ExtResource("3_d1c63")
 
 [node name="PheromonesManager" type="Node2D" parent="SimulationManager" unique_id=771428946]
 script = ExtResource("3_7g83o")
-config = SubResource("Resource_ubxs6")
+config = SubResource("Resource_pdh0q")
 
 [node name="PheromonesMap" type="Sprite2D" parent="SimulationManager/PheromonesManager" unique_id=1186449389]
 texture_filter = 1

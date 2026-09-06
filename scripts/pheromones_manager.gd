@@ -1,5 +1,6 @@
 extends Node2D
 
+
 @export var config: SimulationConfig
 
 var rd: RenderingDevice
@@ -16,6 +17,8 @@ var uniform_set_a_to_b: RID
 var uniform_set_b_to_a: RID
 
 var display_pheromones_tex: Texture2DRD
+
+var brush_radius: float
 
 
 func init(shared_rd: RenderingDevice, s_set: int, size: Vector2) -> void:
@@ -87,7 +90,7 @@ func compute_pheromones(delta: float, step_toggle: bool) -> void:
 	# and the offset must be a multiple of the size
 	push_constant.encode_float(8, mouse_pos.x)
 	push_constant.encode_float(12, mouse_pos.y)
-	push_constant.encode_float(16, Brush.radius)
+	push_constant.encode_float(16, brush_radius)
 	push_constant.encode_s32(20, int(blend_add))
 	push_constant.encode_float(24, config.world_to_phero_ratio())
 	push_constant.encode_float(28, delta)
@@ -106,6 +109,9 @@ func compute_pheromones(delta: float, step_toggle: bool) -> void:
 func update_sprite(step_toggle: bool) -> void:
 	var latest_tex: RID = pheromones_tex_b if step_toggle else pheromones_tex_a
 	display_pheromones_tex.texture_rd_rid = latest_tex
+
+func set_brush_radius(new_radius: float) -> void:
+	brush_radius = new_radius
 
 func _exit_tree() -> void:
 	if rd:
