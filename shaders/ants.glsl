@@ -2,6 +2,7 @@
 #version 450
 
 layout(push_constant, std430) uniform Params {
+    float world_to_phero_ratio;
     float time_elapsed;
 } params;
 
@@ -27,17 +28,23 @@ void main() {
     vec2 left_antenna_local = vec2(15.0, -6.0);
     vec2 right_antenna_local = vec2(15.0, 6.0);
     vec2 pheromones_gland_local = vec2(-12.0, 0.0);
+
     mat2 rotation_angle = mat2(
         vec2(cos(ants[id].angle), sin(ants[id].angle)),
         vec2(-sin(ants[id].angle), cos(ants[id].angle))
     );
+
     vec2 left_antenna_rotated = rotation_angle * left_antenna_local;
     vec2 right_antenna_rotated = rotation_angle * right_antenna_local;
     vec2 pheromones_gland_rotated = rotation_angle * pheromones_gland_local;
 
-    vec4 left_antenna_pheromones = imageLoad(pheromones, ivec2(ants[id].position + left_antenna_rotated));
-    vec4 right_antenna_pheromones = imageLoad(pheromones, ivec2(ants[id].position + right_antenna_rotated));
-    imageStore(pheromones, ivec2(ants[id].position + pheromones_gland_rotated), vec4(1.0, 0.0, 0.0, 1.0));
+    vec2 left_antenna_rotated_scaled = params.world_to_phero_ratio * left_antenna_rotated;
+    vec2 right_antenna_rotated_scaled = params.world_to_phero_ratio * right_antenna_rotated;
+    vec2 pheromones_gland_rotated_scaled = params.world_to_phero_ratio * pheromones_gland_rotated;
+
+    vec4 left_antenna_pheromones = imageLoad(pheromones, ivec2(params.world_to_phero_ratio * ants[id].position + left_antenna_rotated_scaled));
+    vec4 right_antenna_pheromones = imageLoad(pheromones, ivec2(params.world_to_phero_ratio * ants[id].position + right_antenna_rotated_scaled));
+    imageStore(pheromones, ivec2(params.world_to_phero_ratio * ants[id].position + pheromones_gland_rotated_scaled), vec4(1.0, 0.0, 0.0, 1.0));
 
     bool is_pheromones = left_antenna_pheromones.r >= 0.01 || right_antenna_pheromones.r >= 0.01;
     bool turn_left = left_antenna_pheromones.r > right_antenna_pheromones.r;

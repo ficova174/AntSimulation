@@ -86,8 +86,9 @@ func compute_ants(delta: float, step_toggle) -> void:
 	var current_set: RID = uniform_set_ants_a if not step_toggle else uniform_set_ants_b
 
 	var push_constant: PackedByteArray = PackedByteArray()
-	push_constant.resize(4)
-	push_constant.encode_float(0, delta)
+	push_constant.resize(8)
+	push_constant.encode_float(0, config.world_to_phero_ratio())
+	push_constant.encode_float(4, delta)
 
 	var compute_list: int = rd.compute_list_begin()
 	rd.compute_list_bind_compute_pipeline(compute_list, ants_pipeline)

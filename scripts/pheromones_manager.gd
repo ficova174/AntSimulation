@@ -21,7 +21,7 @@ var display_pheromones_tex: Texture2DRD
 var brush_radius: float
 
 
-func init(shared_rd: RenderingDevice, s_set: int, size: Vector2) -> void:
+func init(shared_rd: RenderingDevice, s_set: int, size: Vector2i) -> void:
 	rd = shared_rd
 	shader_set = s_set
 	pheromones_shader = rd.shader_create_from_spirv(pheromones_shader_file.get_spirv())
