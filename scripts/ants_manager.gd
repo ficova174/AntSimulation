@@ -13,12 +13,13 @@ var ants_pipeline: RID
 var shader_set: int
 
 var ants_buffer: RID
+var ant_data_size: int = 24 # Look at the glsl or _create_ant_buffer for buffer size
 
 var uniform_set_ants_a: RID
 var uniform_set_ants_b: RID
 
 var ant_sprites: Array[Sprite2D] = []
-var ant_texture: Resource = preload("res://assets/ant.png")
+var ant_texture: Texture2D = preload("res://assets/ant.png")
 
 
 func init(shared_rd: RenderingDevice, s_set: int, tex_a: RID, tex_b: RID, colony_positions: Array[Vector2]) -> void:
@@ -36,7 +37,6 @@ func init(shared_rd: RenderingDevice, s_set: int, tex_a: RID, tex_b: RID, colony
 
 func _create_ants_buffer(colony_pos: Array[Vector2]) -> RID:
 	var ants_data: PackedByteArray = PackedByteArray()
-	var ant_data_size: int = 16
 	ants_data.resize(total_ants * ant_data_size)
 
 	var ant_idx: int = 0
@@ -52,7 +52,9 @@ func _create_ants_buffer(colony_pos: Array[Vector2]) -> RID:
 			ants_data.encode_float(offset + 0, col_pos.x)
 			ants_data.encode_float(offset + 4, col_pos.y)
 			ants_data.encode_float(offset + 8, angle)
-			ants_data.encode_float(offset + 12, 0.0)
+			ants_data.encode_s32(offset + 12, ant_texture.get_height())
+			ants_data.encode_float(offset + 16, 0.0)
+			ants_data.encode_float(offset + 20, 0.0)
 
 			ant_idx += 1
 
@@ -86,9 +88,10 @@ func compute_ants(delta: float, step_toggle) -> void:
 	var current_set: RID = uniform_set_ants_a if not step_toggle else uniform_set_ants_b
 
 	var push_constant: PackedByteArray = PackedByteArray()
-	push_constant.resize(8)
-	push_constant.encode_float(0, config.world_to_phero_ratio())
-	push_constant.encode_float(4, delta)
+	push_constant.resize(12)
+	push_constant.encode_s32(0, config.world_size.x)
+	push_constant.encode_float(4, config.world_to_phero_ratio())
+	push_constant.encode_float(8, delta)
 
 	var compute_list: int = rd.compute_list_begin()
 	rd.compute_list_bind_compute_pipeline(compute_list, ants_pipeline)
@@ -103,7 +106,7 @@ func compute_ants(delta: float, step_toggle) -> void:
 func update_sprites() -> void:
 	var raw_data: PackedByteArray = rd.buffer_get_data(ants_buffer)
 	for i in range(total_ants):
-		var offset: int = i * 16
+		var offset: int = i * ant_data_size
 		var pos_x: float = raw_data.decode_float(offset + 0)
 		var pos_y: float = raw_data.decode_float(offset + 4)
 		var angle: float = raw_data.decode_float(offset + 8)
